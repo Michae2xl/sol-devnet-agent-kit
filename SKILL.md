@@ -52,7 +52,7 @@ scripts/sol-devnet-pow.sh 8HXNYtEzNwhGFjZbr5rSY6iDLVH6cUc2iKnvK3mf4df8 60s --fre
 2. Never ask for seed phrases, private keys, browser cookies, GitHub sessions, or faucet auth tokens.
 3. Preserve and reuse the latest temporary keypair unless the user explicitly asks for a fresh keypair or deletion.
 4. Keep `0.01` devnet SOL reserved in the temporary keypair for future fees; transfer only the excess back to the destination wallet.
-5. If the temporary keypair has no devnet SOL, the script may try a small normal RPC airdrop. If rate-limited, ask the user to send at least `0.011` devnet SOL to the printed temporary address, then rerun the same command.
+5. If the temporary keypair has no devnet SOL, the script tries a small RPC airdrop, then falls back to the optional fee-float relay (`relay/`) when `SOL_DEVNET_RELAY_URL` is exported. Only if both fail, ask the user to send at least `0.011` devnet SOL to the printed temporary address and rerun the same command.
 6. Run with a bounded duration using `timeout`; default is 60 seconds.
 7. After mining, transfer the available temporary-wallet balance above the retained reserve back to the user's destination wallet.
 8. Report the mined amount, transfer signature, final destination balance, retained temporary balance, and explorer links.

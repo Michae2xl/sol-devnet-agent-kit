@@ -57,6 +57,7 @@ RESERVE_LAMPORTS="${SOL_DEVNET_RESERVE_LAMPORTS:-10000000}"
 AIRDROP_LAMPORTS="${SOL_DEVNET_AIRDROP_LAMPORTS:-11000000}"
 TRANSFER_FEE_LAMPORTS="${SOL_DEVNET_TRANSFER_FEE_LAMPORTS:-5000}"
 RPC_URL="${SOL_DEVNET_RPC_URL:-https://api.devnet.solana.com}"
+RELAY_URL="${SOL_DEVNET_RELAY_URL:-}"
 STATE_DIR="${SOL_DEVNET_STATE_DIR:-$HOME/.sol-devnet-miner}"
 KEYPAIR_PATH="$STATE_DIR/current-keypair.json"
 LATEST_FILE="$STATE_DIR/latest-keypair"
@@ -113,7 +114,25 @@ install_devnet_pow_if_needed() {
   fi
 
   need_cmd cargo
-  echo "devnet-pow not found. Installing with: cargo install devnet-pow"
+  cat <<'WARN'
+
+============================================================
+  HEADS UP: devnet-pow not found. About to run:
+    cargo install devnet-pow
+  This compiles the Solana CLI stack from source and
+  typically takes 5-10 minutes on first run.
+
+  After the build, the script needs ~0.011 devnet SOL on a
+  fresh temporary wallet to pay fees. Devnet faucets are
+  often rate-limited. If the auto-airdrop fails you will
+  need to fund the temp wallet manually from one of:
+    - https://faucet.solana.com
+    - https://solfaucet.com
+    - solana airdrop 0.02 <TEMP_WALLET> --url devnet
+============================================================
+
+WARN
+  echo "Installing devnet-pow..."
   cargo install devnet-pow
 
   DEVNET_POW_BIN="$(command -v devnet-pow || true)"
@@ -191,6 +210,32 @@ async function rpc(method, params) {
 (async () => {
   const balance = await rpc('getBalance', [wallet, {commitment: 'confirmed'}]);
   console.log(balance.value);
+})().catch(err => {
+  console.error(err.message);
+  process.exit(1);
+});
+NODE
+}
+
+try_relay_sponsor() {
+  local wallet="$1"
+  local relay="$2"
+  [[ -n "$relay" ]] || return 1
+  node_eval "$wallet" "$relay" <<'NODE'
+const wallet = process.argv[2];
+const relay = process.argv[3].replace(/\/$/, '');
+(async () => {
+  const res = await fetch(`${relay}/sponsor`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ wallet }),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    console.error(json.error || `relay returned status ${res.status}`);
+    process.exit(1);
+  }
+  console.log(json.signature || 'ok');
 })().catch(err => {
   console.error(err.message);
   process.exit(1);
@@ -463,23 +508,45 @@ echo "RPC:               $RPC_URL"
 
 BALANCE="$(get_balance_lamports "$TEMP_WALLET")"
 if [[ "$BALANCE" -lt 10000 ]]; then
+  FUNDED=0
+
   echo "Temporary wallet needs fee float. Trying a small devnet RPC airdrop..."
-  if ! try_airdrop_fee_float "$TEMP_WALLET"; then
-    echo
-    echo "Could not auto-fund the temporary wallet, likely due devnet faucet rate limits."
-    echo "Send at least 0.011 devnet SOL to this temporary wallet:"
-    echo "  $TEMP_WALLET"
-    echo
-    echo "Then rerun the same command:"
-    echo "  $0 $DEST_WALLET $DURATION"
-    exit 2
+  if try_airdrop_fee_float "$TEMP_WALLET"; then
+    if BALANCE="$(wait_for_balance "$TEMP_WALLET" 10000)"; then
+      FUNDED=1
+    else
+      echo "Airdrop requested but did not confirm in time."
+    fi
+  else
+    echo "Public devnet faucet refused the airdrop (likely rate-limited)."
   fi
-  if ! BALANCE="$(wait_for_balance "$TEMP_WALLET" 10000)"; then
+
+  if [[ "$FUNDED" -eq 0 && -n "$RELAY_URL" ]]; then
+    echo "Asking fee-float relay at $RELAY_URL ..."
+    if try_relay_sponsor "$TEMP_WALLET" "$RELAY_URL"; then
+      if BALANCE="$(wait_for_balance "$TEMP_WALLET" 10000)"; then
+        FUNDED=1
+        echo "Relay-funded. Continuing."
+      else
+        echo "Relay accepted the request but balance did not confirm in time."
+      fi
+    else
+      echo "Relay refused or was unreachable."
+    fi
+  fi
+
+  if [[ "$FUNDED" -eq 0 ]]; then
     echo
-    echo "Airdrop was requested, but the temporary wallet balance did not confirm in time."
-    echo "Current temporary balance: $BALANCE lamports"
+    echo "Could not auto-fund the temporary wallet."
     echo "Send at least 0.011 devnet SOL to this temporary wallet:"
     echo "  $TEMP_WALLET"
+    echo
+    echo "Faucet options:"
+    echo "  https://faucet.solana.com"
+    echo "  https://solfaucet.com"
+    if [[ -z "$RELAY_URL" ]]; then
+      echo "  (or deploy the fee-float relay in relay/ and export SOL_DEVNET_RELAY_URL)"
+    fi
     echo
     echo "Then rerun the same command:"
     echo "  $0 $DEST_WALLET $DURATION"

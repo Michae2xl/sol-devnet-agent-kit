@@ -1,0 +1,15 @@
+{
+  "name": "sol-devnet-fee-relay",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cloudflare Worker that sponsors a tiny fee float (0.011 SOL devnet) to a fresh wallet so it can run sol-devnet-agent-kit without manual faucet wrangling.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "kv:create": "wrangler kv namespace create RELAY_KV",
+    "secret:keypair": "wrangler secret put RELAY_KEYPAIR_JSON"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

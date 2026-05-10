@@ -57,6 +57,24 @@ Use scripts/sol-devnet-simple.sh. Ask only for my public Solana devnet wallet
 and duration. Never ask for private keys or auth tokens.
 ```
 
+## Fee-Float Relay (Optional)
+
+The first run on a fresh machine needs ~0.011 devnet SOL on the temporary
+wallet to pay tx fees. The public devnet faucet is frequently rate-limited,
+so the kit ships an optional Cloudflare Worker (`relay/`) that sponsors that
+tiny fee float once per fresh wallet.
+
+Deploy it once, then point the script at it:
+
+```bash
+export SOL_DEVNET_RELAY_URL="https://your-relay.workers.dev"
+scripts/sol-devnet-simple.sh YOUR_DEVNET_WALLET 60s
+```
+
+See [`relay/README.md`](relay/README.md) for deploy and safety details. The
+script falls back to the relay only when the public faucet refuses, and the
+relay only sponsors zero-balance wallets.
+
 ## Local State
 
 The script stores its temporary keypair in:

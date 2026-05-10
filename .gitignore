@@ -14,3 +14,9 @@ target/
 *.log
 *.tmp
 
+# Relay (Cloudflare Worker) — never commit hot wallet or local node deps.
+relay/relay-keypair.json
+relay/.dev.vars
+relay/node_modules/
+relay/.wrangler/
+
