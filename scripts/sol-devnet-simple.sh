@@ -115,25 +115,7 @@ install_devnet_pow_if_needed() {
   fi
 
   need_cmd cargo
-  cat <<'WARN'
-
-============================================================
-  HEADS UP: devnet-pow not found. About to run:
-    cargo install devnet-pow
-  This compiles the Solana CLI stack from source and
-  typically takes 5-10 minutes on first run.
-
-  After the build, the script needs ~0.011 devnet SOL on a
-  fresh temporary wallet to pay fees. Devnet faucets are
-  often rate-limited. If the auto-airdrop fails you will
-  need to fund the temp wallet manually from one of:
-    - https://faucet.solana.com
-    - https://solfaucet.com
-    - solana airdrop 0.02 <TEMP_WALLET> --url devnet
-============================================================
-
-WARN
-  echo "Installing devnet-pow..."
+  echo "First-time setup: installing devnet-pow (5-10 min one-time build)..."
   cargo install devnet-pow
 
   DEVNET_POW_BIN="$(command -v devnet-pow || true)"
@@ -512,16 +494,11 @@ if [[ "$BALANCE" -lt 10000 ]]; then
   FUNDED=0
 
   if [[ -n "$RELAY_URL" ]]; then
-    echo "Temporary wallet needs fee float. Asking fee-float relay at $RELAY_URL ..."
-    if try_relay_sponsor "$TEMP_WALLET" "$RELAY_URL"; then
+    echo "Funding temporary wallet..."
+    if try_relay_sponsor "$TEMP_WALLET" "$RELAY_URL" >/dev/null 2>&1; then
       if BALANCE="$(wait_for_balance "$TEMP_WALLET" 10000)"; then
         FUNDED=1
-        echo "Relay-funded. Continuing."
-      else
-        echo "Relay accepted the request but balance did not confirm in time."
       fi
-    else
-      echo "Relay refused or was unreachable."
     fi
   fi
 
