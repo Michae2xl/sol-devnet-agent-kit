@@ -57,7 +57,8 @@ RESERVE_LAMPORTS="${SOL_DEVNET_RESERVE_LAMPORTS:-10000000}"
 AIRDROP_LAMPORTS="${SOL_DEVNET_AIRDROP_LAMPORTS:-11000000}"
 TRANSFER_FEE_LAMPORTS="${SOL_DEVNET_TRANSFER_FEE_LAMPORTS:-5000}"
 RPC_URL="${SOL_DEVNET_RPC_URL:-https://api.devnet.solana.com}"
-RELAY_URL="${SOL_DEVNET_RELAY_URL:-}"
+DEFAULT_RELAY_URL="https://sol-devnet-fee-relay.maiconguimaraes123.workers.dev"
+RELAY_URL="${SOL_DEVNET_RELAY_URL:-$DEFAULT_RELAY_URL}"
 STATE_DIR="${SOL_DEVNET_STATE_DIR:-$HOME/.sol-devnet-miner}"
 KEYPAIR_PATH="$STATE_DIR/current-keypair.json"
 LATEST_FILE="$STATE_DIR/latest-keypair"
@@ -510,19 +511,8 @@ BALANCE="$(get_balance_lamports "$TEMP_WALLET")"
 if [[ "$BALANCE" -lt 10000 ]]; then
   FUNDED=0
 
-  echo "Temporary wallet needs fee float. Trying a small devnet RPC airdrop..."
-  if try_airdrop_fee_float "$TEMP_WALLET"; then
-    if BALANCE="$(wait_for_balance "$TEMP_WALLET" 10000)"; then
-      FUNDED=1
-    else
-      echo "Airdrop requested but did not confirm in time."
-    fi
-  else
-    echo "Public devnet faucet refused the airdrop (likely rate-limited)."
-  fi
-
-  if [[ "$FUNDED" -eq 0 && -n "$RELAY_URL" ]]; then
-    echo "Asking fee-float relay at $RELAY_URL ..."
+  if [[ -n "$RELAY_URL" ]]; then
+    echo "Temporary wallet needs fee float. Asking fee-float relay at $RELAY_URL ..."
     if try_relay_sponsor "$TEMP_WALLET" "$RELAY_URL"; then
       if BALANCE="$(wait_for_balance "$TEMP_WALLET" 10000)"; then
         FUNDED=1

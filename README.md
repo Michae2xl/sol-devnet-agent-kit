@@ -64,16 +64,15 @@ wallet to pay tx fees. The public devnet faucet is frequently rate-limited,
 so the kit ships a Cloudflare Worker (`relay/`) that sponsors that tiny fee
 float once per fresh wallet.
 
-A public relay is hosted at:
+A public relay is baked in at:
 
 ```text
 https://sol-devnet-fee-relay.maiconguimaraes123.workers.dev
 ```
 
-```bash
-export SOL_DEVNET_RELAY_URL="https://sol-devnet-fee-relay.maiconguimaraes123.workers.dev"
-scripts/sol-devnet-simple.sh YOUR_DEVNET_WALLET 60s
-```
+You don't need to configure anything — `scripts/sol-devnet-simple.sh` calls
+it automatically the first time the temporary wallet is empty. Override with
+`SOL_DEVNET_RELAY_URL=...` if you want to point at a self-hosted instance.
 
 The script falls back to the relay only when the public faucet refuses, and
 the relay only sponsors zero-balance wallets (one-time per wallet, capped
