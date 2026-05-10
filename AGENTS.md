@@ -30,16 +30,19 @@ When the user wants devnet SOL mined or says `sol-devnet`:
 
 ## Failure Handling
 
-If the script says the temporary wallet could not be auto-funded, tell the user
-to send at least `0.011` devnet SOL to the printed temporary wallet, then rerun
-the exact same command.
+The script funds the temporary wallet automatically via the bundled fee-float
+relay (`SOL_DEVNET_RELAY_URL`, baked-in default). The relay only sponsors fresh
+zero-balance wallets, one-time per wallet. If the relay refuses (e.g. wallet
+already sponsored, daily IP cap reached, relay drained), tell the user to send
+at least `0.011` devnet SOL to the printed temporary wallet from
+https://faucet.solana.com and rerun the same command.
 
 If `devnet-pow` is missing, the simple script tries `cargo install devnet-pow`.
-If installation fails, report the dependency failure and the command that failed.
+First-time install takes 5-10 minutes. If installation fails, report the
+dependency failure and the command that failed.
 
 ## Advanced Script
 
 Use `scripts/sol-devnet-pow.sh` only when the user needs explicit advanced
 options such as `--keypair`, `--fresh`, `--difficulty`, `--reward`,
 `--target-lamports`, or `--rpc`.
-

@@ -37,15 +37,24 @@ scripts/sol-devnet-simple.sh YOUR_DEVNET_WALLET 60s
 
 Durations can be `60s`, `120s`, `5m`, `1h`, or a plain number of seconds.
 
-## Install As A Codex Skill
+## Install As A Skill
+
+**Claude Code:**
+
+```bash
+git clone https://github.com/Michae2xl/sol-devnet-agent-kit.git ~/.claude/skills/sol-devnet
+chmod +x ~/.claude/skills/sol-devnet/scripts/*.sh
+```
+
+**Codex:**
 
 ```bash
 git clone https://github.com/Michae2xl/sol-devnet-agent-kit.git ~/.codex/skills/sol-devnet
 chmod +x ~/.codex/skills/sol-devnet/scripts/*.sh
 ```
 
-After that, ask Codex for `sol-devnet` with a destination devnet wallet and a
-duration.
+After that, ask the agent for `sol-devnet` with a destination devnet wallet
+and a duration.
 
 ## Use With Other Agents
 
