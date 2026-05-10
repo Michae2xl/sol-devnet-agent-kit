@@ -67,7 +67,7 @@ float once per fresh wallet.
 A public relay is baked in at:
 
 ```text
-https://sol-devnet-fee-relay.maiconguimaraes123.workers.dev
+https://sol-devnet-fee-relay.michae2xl.workers.dev
 ```
 
 You don't need to configure anything — `scripts/sol-devnet-simple.sh` calls
