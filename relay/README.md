@@ -62,5 +62,23 @@ scripts/sol-devnet-simple.sh <YOUR_WALLET> 60s
 
 - Devnet only. Never point this at mainnet — anyone can request funds.
 - The hot wallet holds devnet SOL only; treat the secret as throwaway.
-- Add Cloudflare Turnstile in front of `/sponsor` if you see abuse.
 - KV caps are best-effort, not bulletproof — keep `DAILY_IP_LIMIT` low.
+
+## Operating a public/central relay
+
+If you want to host one relay for everyone (instead of asking each user to
+deploy their own), harden it before sharing the URL:
+
+- Put **Cloudflare Turnstile** in front of `/sponsor` to block headless
+  sybil floods. The verification token can be passed in the request body
+  and validated in the Worker.
+- Lower `DAILY_IP_LIMIT` (e.g. `2`) — most legit users only need one
+  sponsorship per fresh machine.
+- Tighten `SPONSOR_LAMPORTS` to the bare minimum the kit needs (`11000000`
+  is already that floor; do not raise it).
+- Monitor the relay wallet balance and refill from
+  https://faucet.solana.com when it gets low. 1 SOL ≈ 90 sponsorships.
+- Consider rotating the hot keypair if you see abuse and re-deploying with
+  a fresh secret.
+- If the relay starts costing real time/effort, switch the README back to
+  "deploy your own" and disable the central one.

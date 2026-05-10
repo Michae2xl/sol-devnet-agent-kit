@@ -34,16 +34,16 @@ scripts/sol-devnet-simple.sh <DEST_WALLET> <DURATION>
 Example:
 
 ```bash
-scripts/sol-devnet-simple.sh 8HXNYtEzNwhGFjZbr5rSY6iDLVH6cUc2iKnvK3mf4df8 5m
+scripts/sol-devnet-simple.sh YOUR_DEVNET_WALLET 5m
 ```
 
 Examples:
 
 ```bash
-scripts/sol-devnet-pow.sh 8HXNYtEzNwhGFjZbr5rSY6iDLVH6cUc2iKnvK3mf4df8
-scripts/sol-devnet-pow.sh 8HXNYtEzNwhGFjZbr5rSY6iDLVH6cUc2iKnvK3mf4df8 180s
-scripts/sol-devnet-pow.sh 8HXNYtEzNwhGFjZbr5rSY6iDLVH6cUc2iKnvK3mf4df8 5m
-scripts/sol-devnet-pow.sh 8HXNYtEzNwhGFjZbr5rSY6iDLVH6cUc2iKnvK3mf4df8 60s --fresh
+scripts/sol-devnet-pow.sh YOUR_DEVNET_WALLET
+scripts/sol-devnet-pow.sh YOUR_DEVNET_WALLET 180s
+scripts/sol-devnet-pow.sh YOUR_DEVNET_WALLET 5m
+scripts/sol-devnet-pow.sh YOUR_DEVNET_WALLET 60s --fresh
 ```
 
 ## Operational Rules

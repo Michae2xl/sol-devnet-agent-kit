@@ -7,9 +7,9 @@ Usage:
   sol-devnet-simple.sh <DEST_DEVNET_WALLET> <DURATION>
 
 Examples:
-  sol-devnet-simple.sh 8HXNYtEzNwhGFjZbr5rSY6iDLVH6cUc2iKnvK3mf4df8 60s
-  sol-devnet-simple.sh 8HXNYtEzNwhGFjZbr5rSY6iDLVH6cUc2iKnvK3mf4df8 5m
-  sol-devnet-simple.sh 8HXNYtEzNwhGFjZbr5rSY6iDLVH6cUc2iKnvK3mf4df8 120
+  sol-devnet-simple.sh YOUR_DEVNET_WALLET 60s
+  sol-devnet-simple.sh YOUR_DEVNET_WALLET 5m
+  sol-devnet-simple.sh YOUR_DEVNET_WALLET 120
 
 What this script does:
   - Creates or reuses a temporary devnet keypair.
