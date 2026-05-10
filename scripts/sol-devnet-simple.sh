@@ -391,10 +391,14 @@ function makeTransferMessage(from, to, lamports, blockhash) {
   }]);
 
   for (let i = 0; i < 30; i++) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    const status = await rpc('getSignatureStatuses', [[signature], {searchTransactionHistory: true}]);
-    const value = status.value?.[0];
-    if (value?.confirmationStatus === 'confirmed' || value?.confirmationStatus === 'finalized') break;
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      const status = await rpc('getSignatureStatuses', [[signature], {searchTransactionHistory: true}]);
+      const value = status.value?.[0];
+      if (value?.confirmationStatus === 'confirmed' || value?.confirmationStatus === 'finalized') break;
+    } catch (err) {
+      if (!/429|Too many requests/i.test(err.message)) throw err;
+    }
   }
 
   const afterTemp = await rpc('getBalance', [from, {commitment: 'confirmed'}]);
