@@ -1,0 +1,16 @@
+.DS_Store
+
+# Local temporary wallet state. Never commit private keypair material.
+.sol-devnet/
+.sol-devnet-miner/
+current-keypair.json
+latest-keypair
+*.keypair.json
+
+# Rust build output if users build local tools here.
+target/
+
+# Logs and local scratch files.
+*.log
+*.tmp
+

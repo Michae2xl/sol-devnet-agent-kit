@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sol Devnet"
+  short_description: "Run Solana devnet PoW faucet tests safely."
+  default_prompt: "sol-devnet 60s para minha wallet devnet"
