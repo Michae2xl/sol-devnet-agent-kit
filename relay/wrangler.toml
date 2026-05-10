@@ -9,7 +9,7 @@ compatibility_flags = ["nodejs_compat"]
 # then paste the returned id below.
 [[kv_namespaces]]
 binding = "RELAY_KV"
-id = "REPLACE_ME_KV_ID"
+id = "ecde3ce600a94ebfa0e3dc7dfcec4e68"
 
 [vars]
 RPC_URL = "https://api.devnet.solana.com"
